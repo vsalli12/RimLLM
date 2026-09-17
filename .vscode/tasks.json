@@ -1,0 +1,13 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build RimChronicle",
+      "type": "process",
+      "command": "dotnet",
+      "args": ["build", "${workspaceFolder}/RimChronicle.csproj", "--configuration", "Release"],
+      "problemMatcher": "$msCompile",
+      "group": { "kind": "build", "isDefault": true }
+    }
+  ]
+}
