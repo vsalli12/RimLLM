@@ -225,3 +225,29 @@ The following table lists the recommended [Harmony](https://github.com/pardeike/
 
 [^1]: There is conflicting information about which version of Harmony should be used with RimWorld version 1.1. [According to Harmony's developer](https://github.com/pardeike/HarmonyRimWorld/issues/39), you should use version 1.2.0.1, but it was standard practice at the time of its release to use version 2.x, so it's probably best to use version 2.2.2.0.
 [^2]: For the latest version of RimWorld, check [the RimWorld mod's GitHub repository](https://github.com/pardeike/HarmonyRimWorld) to ensure that the proper version is being used.
+
+
+### Diary scribbles (development)
+
+Run local Ollama and ComfyUI at `127.0.0.1:8188`. Daily generation now saves the
+entry first, then calls `RAG_main.generate_image_prompt` and sends the scene text
+to node 130 (`inputs.value`) of `dev/ZIT_scribble_generate.json`. Node 131 retains
+the workflow's pencil-style prefix; node 132 supplies the saved image.
+Set `GENERATE_SCRIBBLES = False` in `dev/generate_chronicles.py` for text only.
+
+To illustrate existing entries without regenerating their prose:
+
+```powershell
+python dev/image_generation.py dev/chronicles/<game-id>/<session-id>
+```
+
+A single `day001.json` path also works. Add `--force` to regenerate an illustration.
+Otherwise matching entry text and workflow reuse the saved scene prompt and PNG.
+The `.scribble.json` sidecar stores the scene prompt and cache metadata, and the
+entry JSON links its image. Image failures leave the diary intact and can be
+retried with the same command. ComfyUI output is downloaded through its API, so
+no local ComfyUI input/output directory configuration is needed.
+
+Restart `dev/host_frontend.py` after updating its code, then refresh the diary.
+Available illustrations appear beneath each entry; older entries without images
+remain readable.

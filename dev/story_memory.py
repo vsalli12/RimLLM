@@ -11,13 +11,22 @@ def load_memory(path=MEMORY_PATH):
     return json.loads(path.read_text(encoding="utf-8")) if path.exists() else []
 
 
-def parse_story(content):
+def parse_story(content, day=None):
     text = re.sub(r"<think>.*?</think>", "", content, flags=re.S).strip()
     if text.startswith("```"):
         text = re.sub(r"^```(?:json)?\s*|\s*```$", "", text).strip()
     story = json.loads(text)
     if not isinstance(story, dict) or not isinstance(story.get("chronicle"), str) or not story["chronicle"].strip():
         raise ValueError("Response needs a nonempty chronicle string")
+    # Older entries have no title; validate it when supplied.
+    if "page_title" in story:
+        title = story["page_title"]
+        if not isinstance(title, str) or not title.strip():
+            raise ValueError("page_title must be a nonempty string")
+        story["page_title"] = (
+            (f"Entry {day}" if day is not None else "Entry")
+            if len(title.split()) > 5 else " ".join(title.split())
+        )
     bits = story.get("story_bits")
     if not isinstance(bits, list) or any(not isinstance(b, (str, dict)) for b in bits):
         raise ValueError("Response needs a story_bits list of strings or summary objects")
@@ -33,7 +42,8 @@ def save_story(story, session, day, path=MEMORY_PATH):
     records = [r for r in records if (r["playthrough_id"], r["session_id"], r["day"]) != key]
     records.append({"playthrough_id": key[0], "session_id": key[1], "day": day,
                     "source_end_sequence": session.get("source_end_sequence"),
-                    "chronicle": story["chronicle"], "story_bits": story["story_bits"]})
+                    "chronicle": story["chronicle"], "story_bits": story["story_bits"],
+                    **({"page_title": story["page_title"]} if "page_title" in story else {})})
     path = Path(path)
     temporary = path.with_suffix(path.suffix + ".tmp")
     temporary.write_text(json.dumps(records, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
@@ -68,10 +78,17 @@ def prior_story_bits(memory, events, playthrough_id, session_id, day):
             continue
         if source != session_id and (record.get("source_end_sequence") is None or record["source_end_sequence"] > allowed[source]):
             continue
+        days_ago = day - record["day"]
+        if days_ago == 1:
+            when = "Yesterday"
+        else:
+            number = {2: "Two", 3: "Three", 4: "Four", 5: "Five", 6: "Six",
+                      7: "Seven", 8: "Eight", 9: "Nine", 10: "Ten"}.get(days_ago, str(days_ago))
+            when = f"{number} days ago"
         for bit in record["story_bits"]:
             text = bit if isinstance(bit, str) else bit["summary"]
             if isinstance(bit, dict) and bit.get("invented_interpretation"):
                 text += " Interpretation: " + str(bit["invented_interpretation"])
             if text.strip():
-                lines.append(f"- Day {record['day']}: {text}")
+                lines.append(f"- {when}: {text}")
     return "\n".join(lines)

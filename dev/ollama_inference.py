@@ -39,7 +39,7 @@ def main():
     content = response.json()['message']['content']
     print(content)
     try:
-        story = parse_story(content)
+        story = parse_story(content, day=data['day'])
     except (ValueError, TypeError) as error:
         print(f"Story memory was not changed: {error}")
         return

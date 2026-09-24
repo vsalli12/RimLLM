@@ -16,3 +16,4 @@ dev/day*_prompt.txt
 dev/story_memory.json
 dev/story_memory.json.tmp
 dev/chronicles/
+dev/backstory_cache/

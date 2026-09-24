@@ -21,6 +21,22 @@ namespace RimChronicle
                 (pawn.MapHeld != null && pawn.SpawnedOrAnyParentSpawned && !pawn.PositionHeld.Fogged(pawn.MapHeld)));
         }
 
+        public static object ScenarioInfo()
+        {
+            var scenario = Find.Scenario;
+            return scenario == null ? null : Object("name", scenario.name,
+                "summary", scenario.summary, "description", scenario.description,
+                "full_information", scenario.GetFullInformationText());
+        }
+
+        public static object EnvironmentInfo(Map map)
+        {
+            return Object("biome", map.Biome?.defName, "biome_label", map.Biome?.label,
+                "weather", map.weatherManager.curWeather?.defName,
+                "weather_label", map.weatherManager.curWeather?.label,
+                "outdoor_temperature_c", map.mapTemperature.OutdoorTemp);
+        }
+
         public static object Profile(Pawn pawn)
         {
             return Object("pawn_id", pawn.GetUniqueLoadID(), "name", pawn.LabelShort,

@@ -23,6 +23,7 @@ namespace RimChronicle
         private readonly Dictionary<string, int?> locations = new Dictionary<string, int?>();
         private readonly Dictionary<string, int?> jobIds = new Dictionary<string, int?>();
         private readonly Dictionary<string, object> jobStates = new Dictionary<string, object>();
+        private readonly Dictionary<int, string> environments = new Dictionary<int, string>();
         private static int lastErrorTick = -60000;
 
         public ChronicleGameComponent(Game game) { }
@@ -64,7 +65,8 @@ namespace RimChronicle
                 Safely(r =>
                 {
                     carrierId = Current.Game.GetComponent<NotebookGameComponent>()?.Carrier?.GetUniqueLoadID();
-                    Emit("session.started", Object("parent_session_id", parentSession, "parent_event_id", checkpoint));
+                    Emit("session.started", Object("parent_session_id", parentSession, "parent_event_id", checkpoint,
+                        "scenario", ScenarioInfo()));
                     Snapshot("session.snapshot");
                     lastDay = Find.TickManager.TicksGame / 60000;
                 });
@@ -80,7 +82,11 @@ namespace RimChronicle
                     if (carrier != null) SendProfile(carrier);
                     Emit("diary.owner_changed", Object("previous_carrier_id", previous, "new_carrier_id", current));
                 }
-                if (Find.TickManager.TicksGame % 60 == 0) RefreshPawns();
+                if (Find.TickManager.TicksGame % 60 == 0)
+                {
+                    RefreshPawns();
+                    RecordEnvironment();
+                }
                 int day = Find.TickManager.TicksGame / 60000;
                 if (day != lastDay)
                 {
@@ -198,10 +204,25 @@ namespace RimChronicle
         private void Snapshot(string type)
         {
             RefreshPawns();
+            RecordEnvironment();
             Emit(type, Object("pawns", KnownPawns().Select(p => State(p)).ToList(),
                 "maps", Find.Maps.Where(m => m.IsPlayerHome).Select(m => Object("map_id", m.uniqueID,
                     "colonist_count", m.mapPawns.FreeColonistsSpawned.Count,
                     "wealth", m.wealthWatcher.WealthTotal)).ToList()));
+        }
+
+        private void RecordEnvironment()
+        {
+            // Hourly samples plus weather/biome changes, checked once per real-time second
+            // at normal game speed. Keep each loaded map separate, including away maps.
+            int hour = Find.TickManager.TicksGame / 2500;
+            foreach (Map map in Find.Maps)
+            {
+                string signature = hour + ":" + map.Biome?.defName + ":" + map.weatherManager.curWeather?.defName;
+                if (environments.TryGetValue(map.uniqueID, out string previous) && previous == signature) continue;
+                Emit("map.environment", EnvironmentInfo(map), map);
+                environments[map.uniqueID] = signature;
+            }
         }
     }
 }

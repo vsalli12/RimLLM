@@ -5,7 +5,7 @@ import tempfile
 import unittest
 
 from story_memory import load_memory, parse_story, save_story, prior_story_bits
-from build_day_prompt import build_document
+from prompt_constructor import build_document
 
 
 def event(session, sequence, kind="session.started", data=None, day=1):
@@ -15,6 +15,16 @@ def event(session, sequence, kind="session.started", data=None, day=1):
 
 
 class StoryMemoryTests(unittest.TestCase):
+    def test_relative_dates_change_with_entry_day(self):
+        memory = [dict(playthrough_id="colony", session_id="a", day=1,
+                       story_bits=["Chaz is experiencing malnutrition."]),
+                  dict(playthrough_id="colony", session_id="a", day=4,
+                       story_bits=[{"summary": "Ryan died."}])]
+        text = prior_story_bits(memory, [], "colony", "a", 5)
+        self.assertEqual(text, "- Four days ago: Chaz is experiencing malnutrition.\n- Yesterday: Ryan died.")
+        self.assertIn("- Two days ago: Ryan died.", prior_story_bits(memory, [], "colony", "a", 6))
+        self.assertIn("- 11 days ago:", prior_story_bits(memory, [], "colony", "a", 12))
+
     def test_parse_and_replace_same_day(self):
         story = parse_story('```json\n{"chronicle":"A day.","story_bits":["Grief lingered."]}\n```')
         with tempfile.TemporaryDirectory() as folder:
@@ -34,14 +44,14 @@ class StoryMemoryTests(unittest.TestCase):
                   dict(playthrough_id="colony", session_id="a", day=2, story_bits=["Future."]),
                   dict(playthrough_id="other", session_id="a", day=1, story_bits=["Other colony."])]
         text = prior_story_bits(memory, [], "colony", "a", 2)
-        self.assertEqual(text, "- Day 1: Grief.")
+        self.assertEqual(text, "- Yesterday: Grief.")
 
     def test_ancestry_excludes_abandoned_future_and_unrelated_session(self):
         events = [event("a", 10, "pawn.observed"), event("b", 1, data={"parent_session_id":"a", "parent_event_id":"a-10"})]
         def memory(source, end, note):
             return dict(playthrough_id="colony", session_id=source, source_end_sequence=end, day=1, story_bits=[note])
         text = prior_story_bits([memory("a", 9, "Before save."), memory("a", 11, "Abandoned."), memory("c", 1, "Unrelated.")], events, "colony", "b", 2)
-        self.assertEqual(text, "- Day 1: Before save.")
+        self.assertEqual(text, "- Yesterday: Before save.")
 
     def test_next_day_inherits_profile_and_readable_memory(self):
         profile = event("a", 1, "pawn.profile", dict(pawn_id="p", name="Oaks", faction="Renamed colony", is_colonist=True, age_biological=53))
@@ -52,7 +62,7 @@ class StoryMemoryTests(unittest.TestCase):
             doc = build_document([profile, today], day=2, memory=memory)
         prompt = doc["sessions"][0]["prompt"]["user"]
         self.assertIn("Oaks is a 53-year-old", prompt)
-        self.assertIn("Day 1: Oaks felt regret.", prompt)
+        self.assertIn("Yesterday: Oaks felt regret.", prompt)
         self.assertIn("not verified game facts", prompt)
 
 

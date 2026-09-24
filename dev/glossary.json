@@ -1,0 +1,194 @@
+{
+  "Southern Ouna": {
+    "term": "Southern Ouna",
+    "definition": ""
+  },
+  "packaged survival meal": {
+    "term": "packaged survival meal",
+    "definition": "a non rotting food, rare on the rimworld, very useful"
+  },
+  "saguaro cactus": {
+    "term": "saguaro cactus",
+    "definition": "a large cactus found in desert regions"
+  },
+  "Wander_OwnRoom": {
+    "term": "Wander_OwnRoom",
+    "definition": "a mental break where a pawn wanders around their own room, often due to stress or discomfort"
+  },
+  "BloodLoss": {
+    "term": "BloodLoss",
+    "definition": "a lifethreatening condition where a pawn loses a significant amount of blood"
+  },
+  "Malnutrition": {
+    "term": "Malnutrition",
+    "definition": "a condition resulting from insufficient intake of nutrients. Potentially fatal when severe"
+  },
+  "hunter drone": {
+    "term": "hunter drone",
+    "definition": "an ancient autonomous drone with a deadly melee attack. Found in ancient complexes, not raids."
+  },
+  "saguaros cactus": {
+    "term": "saguaros cactus",
+    "definition": "a large cactus found in desert regions"
+  },
+  "drago tree": {
+    "term": "drago tree",
+    "definition": "a subtropical tree, capable of growing in dry conditions"
+  },
+  "component box": {
+    "term": "component box",
+    "definition": "a box that contains components"
+  },
+  "agave": {
+    "term": "agave",
+    "definition": "a wild fruit that grows in bushes, useful as nutrition"
+  },
+  "horseshoe pin": {
+    "term": "horseshoes pin",
+    "definition": "the most basic form of recreation on the Rimworld. Players throw horseshoes at a distance to a stick"
+  },
+  "saguaros": {
+    "term": "saguaros",
+    "definition": ""
+  },
+  "drop pod": {
+    "term": "drop pod",
+    "definition": "a single use rocket powered pod that can carry humans or items"
+  },
+  "glitterworld": {
+    "term": "glitterworld",
+    "definition": "a distant utopia world with extremely advanced technology"
+  },
+  "agave fruit": {
+    "term": "agave fruit",
+    "definition": "a wild fruit that grows in bushes, useful as nutrition"
+  },
+  "downed": {
+    "term": "downed",
+    "definition": "an incapacitated state"
+  },
+  "ancient security terminal": {
+    "term": "ancient security terminal",
+    "definition": "a terminal found in ancient complexes, that control a turret or a door"
+  },
+  "sleeping spot": {
+    "term": "sleeping spot",
+    "definition": "a designated spot on the floor where to sleep on. Not comfortable"
+  },
+  "chain shotgun": {
+    "term": "chain shotgun",
+    "definition": "A fully automatic shotgun. Very deadly at close range"
+  },
+  "muskox wool face mask": {
+    "term": "muskox",
+    "definition": "a large bovine mammal"
+  },
+  "component": {
+    "term": "component",
+    "definition": "a crucial crafting item required for most electrical buildings. Very important for the colony"
+  },
+  "mastodon wool T-shirt": {
+    "term": "mastodon",
+    "definition": "A massive elephant like animal"
+  },
+  "ancient defender turret": {
+    "term": "ancient defender turret",
+    "definition": "a dangerous turret found in ancient complexes. Not part of raids."
+  },
+  "raid": {
+    "term": "raid",
+    "definition": "an attack on the colony"
+  },
+  "LuciferiumAddiction": {
+    "term": "LuciferiumAddiction",
+    "definition": "an addiction to luciferium, gained after a single dose, permanent"
+  },
+  "LuciferiumHigh": {
+    "term": "LuciferiumHigh",
+    "definition": "a mood bonus from ingesting luciferium"
+  },
+  "ancient security turret": {
+    "term": "ancient security turret",
+    "definition": "a dangerous turret found in ancient complexes. Not part of raids."
+  },
+  "fine meal": {
+    "term": "fine meal",
+    "definition": "an above average meal"
+  },
+  "luciferium": {
+    "term": "luciferium",
+    "definition": "the most potent drug. Permanent addiction from a single dose"
+  },
+  "Mechanoid Signal": {
+    "term": "Mechanoid Signal",
+    "definition": "A long quest"
+  },
+  "Mechanoid": {
+    "term": "Mechanoid",
+    "definition": "A very dangerous robotlike enemy, armed with dangerous energy weapons"
+  },
+  "survival meal pallet": {
+    "term": "survival meal pallet",
+    "definition": ""
+  },
+  "cryptosleep casket": {
+    "term": "cryptosleep casket",
+    "definition": ""
+  },
+  "sighstealer": {
+    "term": "sighstealer",
+    "definition": "a terrifying creature that appears invisible until it attacks. Black and inhuman."
+  },
+  "gorehulk": {
+    "term": "gorehulk",
+    "definition": "A massive humanlike monster with long spikes in it's back. It attacks by hurling spikes at the enemy."
+  },
+  "thrumbo": {
+    "term": "thrumbo",
+    "definition": "A massive white animal, armed with a razorsharp horn. Incredibly dangerous when provoked but normally friendly. The horn and it's fur is valuable."
+  },
+  "wasp": {
+    "term": "wasp",
+    "definition": "an ancient defender drone that stings with a razor sharp sting. Dangerous"
+  },
+  "locust": {
+    "term": "locust",
+    "definition": "a large insect capable of flying. Dangerous"
+  },
+  "megascarab": {
+    "term": "megascarab",
+    "definition": "a large insect with sharp prongs. Dangerous"
+  },
+  "spelopede": {
+    "term": "spelopede",
+    "definition": "a large insect. Dangerous"
+  },
+  "ghoul": {
+    "term": "ghoul",
+    "definition": "A terrifying greyish humanlike entity capable of only violence. Eats only meat, and can be utilized in colony defence if fed properly."
+  },
+  "harbinger tree": {
+    "term": "harbinger tree",
+    "definition": "A mysterious tree made from flesh."
+  },
+  "void monolith": {
+    "term": "void monolith",
+    "definition": "A mysterious black monolith that pulses with horrifying energy. It can be studied to gain access to morbid technologies."
+  },
+  "waster": {
+    "term": "waster",
+    "definition": "a human xenotype. grey skin, innate dependence on drugs and immunity to toxicity."
+  },
+  "reinforced barrel": {
+    "term": "reinforced barrel",
+    "definition": "a rare and valuable barrel used in mortars and cannons. Cannot be manufactured and are a scarce appliance"
+  },
+  "yattakin": {
+    "term": "yattakin",
+    "definition": "a human xenotype with furry skin and profiency in animal handling and melee."
+  },
+  "void": {
+    "term": "void",
+    "definition": "an allencompassing entity that sends horrifying threats to the colony."
+  }
+}
