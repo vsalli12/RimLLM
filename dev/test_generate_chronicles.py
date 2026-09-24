@@ -12,7 +12,7 @@ from generate_chronicles import game_timeline, generate_days
 def event(day, sequence, session="a", data=None, kind="colony.letter"):
     return dict(playthrough_id="game", session_id=session, event_id=f"{session}-{sequence}",
                 sequence=sequence, game_day=day, tick=day * 60000, tick_of_day=0,
-                diary_carrier_id=None, type=kind, data=data or {"label": "News", "text": "A visitor arrived."})
+                diary_carrier_id="writer", type=kind, data=data or {"label": "News", "text": "A visitor arrived."})
 
 
 class GenerateChroniclesTests(unittest.TestCase):
@@ -28,6 +28,7 @@ class GenerateChroniclesTests(unittest.TestCase):
         self.images = image_patch.start()
         self.addCleanup(image_patch.stop)
 
+    @patch('generate_chronicles.GENERATE_SCRIBBLES', True)
     def test_image_failure_does_not_discard_completed_diary(self):
         self.images.side_effect = RuntimeError('ComfyUI offline')
         reply = Mock()
@@ -37,6 +38,7 @@ class GenerateChroniclesTests(unittest.TestCase):
             self.assertEqual(json.loads((Path(folder) / 'day001.json').read_text())['chronicle'], 'Saved diary.')
             self.assertTrue((Path(folder) / 'story_memory.json').exists())
 
+    @patch('generate_chronicles.GENERATE_SCRIBBLES', True)
     def test_skipped_diary_gets_missing_scribble_without_text_inference(self):
         with tempfile.TemporaryDirectory() as folder, patch('generate_chronicles.FORCE_GENERATE_NEW', False), patch('generate_chronicles.requests.post') as post, contextlib.redirect_stdout(io.StringIO()):
             path = Path(folder) / 'day001.json'

@@ -1,4 +1,4 @@
-﻿"""
+"""
 The plan:
 
 We will construct the payload in entirely readable format. Example what we will need:
@@ -12,7 +12,7 @@ feelings and thematic connections, but do not invent concrete events, dialogue q
 deaths or relationships. Social-log text supplies conversation topics, not verbatim dialogue.
 Where a Diary carrier is identified, use their profile as creative guidance for voice and
 give their experiences more attention, while still covering the whole colony. With no
-carrier, use neutral third-person narration. Use only the final recorded carrier as the writer for the entire day.
+carrier, use neutral third-person narration. Use only the latest nonempty recorded carrier as the writer for the entire day.
 Do not assume an assigned job was completed. Mood contributors are context, not proof of motive.
 Select interesting moments and compress repetitive routine activity into prose. Connect
 interactions, relationships and emotional context where useful. This is one recorded session;
@@ -130,13 +130,13 @@ Only people explicitly identified in today's actors or event records may partici
 
 Earlier story bits are fallible historical context, not today's events. Do not replay old visits, meals, raids, or injuries as new occurrences. Terminology definitions are reference material, not evidence of events, severity, motives, or people. Do not reproduce glossary explanations in the chronicle or story_bits. The writer's invented backstory may shape voice but cannot establish current buildings, possessions, or companions.
 
-The final recorded Diary carrier is the writer of the entire entry. Write from that character's first-person perspective, using their supplied profile as creative guidance for voice, personality, priorities, biases, vocabulary, and emotional interpretation.
+The latest nonempty recorded Diary carrier is the writer of the entire entry. Write from that character's first-person perspective, using their supplied profile as creative guidance for voice, personality, priorities, biases, vocabulary, and emotional interpretation.
 
 Refer to the Diary carrier as "I", "me", "my", etc., never as an outside third-person narrator. Other colonists should be described from the writer's personal perspective.
 
 Give greater attention to events the writer personally experienced, witnessed, or would strongly care about, while still covering important events affecting the colony as a whole. The writer may describe events they did not personally witness when those events are present in the records, but should not falsely imply that they witnessed them firsthand.
 
-Use only the final recorded Diary carrier as the writer for the entire recorded session. Do not switch narrators.
+Use only the latest nonempty recorded Diary carrier as the writer for the entire recorded session. Do not switch narrators.
 
 Use the supplied time signatures sparingly in the finished prose.
 
@@ -905,6 +905,13 @@ def anonymize_enemies(earlier, records):
     return transform(earlier), transform(records), scrub
 
 
+def narrator_window(records):
+    """Only packets recorded while the day's last carrier held the diary."""
+    carrier = next((e.get("diary_carrier_id") for e in reversed(records)
+                    if e.get("diary_carrier_id")), None)
+    return carrier, [e for e in records if carrier and e.get("diary_carrier_id") == carrier]
+
+
 def build_document(events, day=DAY, memory=None, backstory_cache=None):
     selected = [e for e in events if e.get("game_day") == day]
     groups = {}
@@ -919,6 +926,9 @@ def build_document(events, day=DAY, memory=None, backstory_cache=None):
                             and e.get("session_id") in allowed and e.get("sequence", 0) <= allowed[e["session_id"]]
                             and e.get("game_day", day) < day]
         earlier.sort(key=lambda e: (e.get("tick", 0), e["sequence"]))
+        diary.carrier_id, records = narrator_window(records)
+        if not records:
+            continue  # Uncarried events do not produce diary entries.
         source_end_sequence = max(e["sequence"] for e in records)
         source_event_count = len(records)
         earlier, records, scrub_enemy_names = anonymize_enemies(earlier, records)
@@ -928,12 +938,6 @@ def build_document(events, day=DAY, memory=None, backstory_cache=None):
             pawn = Pawn(pawn_id, data.get("name"))
             pawn.update({"data": data})
             diary.pawns[pawn_id] = pawn
-        for event in records:
-            # Every packet carries current ownership, including after a save load.
-            if "diary_carrier_id" in event:
-                diary.carrier_id = event["diary_carrier_id"]
-            if event["type"] == "diary.owner_changed":
-                diary.carrier_id = event.get("data", {}).get("new_carrier_id", diary.carrier_id)
         writer = diary.pawns.get(diary.carrier_id)
         if writer:
             writer_text = writer.toReadable()
@@ -944,8 +948,12 @@ def build_document(events, day=DAY, memory=None, backstory_cache=None):
                     + writer.expandBackStory(playthrough_id, backstory_cache))
         elif diary.carrier_id:
             writer_text = names.get(diary.carrier_id, "An unnamed carrier") + "; background unavailable."
+            from narrator_personality import read_backstory
+            personality = read_backstory(playthrough_id, diary.carrier_id, backstory_cache or BACKSTORY_CACHE)
+            if personality:
+                writer_text += "\nPersonal history and personality (voice guidance):\n" + personality
         else:
-            writer_text = "No final Diary carrier. Write in a neutral voice."
+            writer_text = "No Diary carrier has yet been recorded. Write in a neutral voice."
         major, combat_notes, supporting = compact_incidents(select_events(daily_events, diary.carrier_id))
         lines = merged_event_lines(supporting)
         actor_lines = []
@@ -966,7 +974,7 @@ def build_document(events, day=DAY, memory=None, backstory_cache=None):
             "Major events (cover these in the diary):\n" + ("\n".join(major) or "None recorded.")
             + ("\n\nCombat notes (brief supporting detail):\n" + "\n".join(combat_notes) if combat_notes else "")
             + "\n\nOther events (select sparingly):\n" + ("\n".join(lines) or "None recorded."))
-        prompt = (f"Day {day}. Use only the final recorded Diary carrier as the writer for the entire day.\n"
+        prompt = (f"Day {day}. Use only the latest nonempty recorded Diary carrier as the writer for the entire day.\n"
                   "Times are rounded to the nearest hour on a 24-hour clock, with elapsed hour zero displayed as 12:00 (noon).\n\n"
                   "The writer's background:\n" + writer_text + "\n\nThe actors:\n"
                   + "\n".join(actor_lines)

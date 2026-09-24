@@ -17,3 +17,6 @@ dev/story_memory.json
 dev/story_memory.json.tmp
 dev/chronicles/
 dev/backstory_cache/
+dev/diary_settings.json
+dev/diary_settings.tmp
+dev/generation_settings.json

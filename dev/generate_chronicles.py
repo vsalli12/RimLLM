@@ -10,6 +10,7 @@ import RAG_main
 from image_generation import ensure_entry_scribble
 from prompt_constructor import BACKSTORY_CACHE, build_document
 from story_memory import lineage, load_memory, parse_story, save_story
+from diary_book import ensure_book, generate_prologue
 
 # Settings: GAME_ID is the packets' playthrough_id, not a session index.
 GAME_ID = "34593c2935574ecca86402bcd1d688f3"
@@ -79,6 +80,10 @@ def generate_days(events, output_directory, beginning_day, ending_day=None):
 
         document = build_document(events, day=day, memory=load_memory(memory_path),
                                   backstory_cache=BACKSTORY_CACHE)
+        if not document["sessions"]:
+            print(f"Skipping day {day}: no events were recorded while the diary was carried.", flush=True)
+            day += 1
+            continue
         if len(document["sessions"]) != 1:
             raise ValueError("Expected one selected timeline")
         session = document["sessions"][0]
@@ -144,19 +149,37 @@ def generate_days(events, output_directory, beginning_day, ending_day=None):
 
 
 def main():
+    global GAME_ID, MODEL, CONTEXT_TOKENS, OUTPUT_TOKENS, FORCE_GENERATE_NEW, GENERATE_SCRIBBLES
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--session', help='Resume this specific session instead of the latest one')
+    parser.add_argument('--settings', type=Path, help='Settings JSON saved by the dashboard')
     parser.add_argument('--beginning-day', type=int, default=BEGINNING_DAY)
     args = parser.parse_args()
+    ending_day = ENDING_DAY
+    if args.settings:
+        from diary_settings import load_settings
+        if not args.settings.is_file():
+            parser.error('Settings file does not exist')
+        settings = load_settings(args.settings)
+        GAME_ID = settings['game_id']
+        MODEL = settings['model']
+        CONTEXT_TOKENS = settings['context_tokens']
+        OUTPUT_TOKENS = settings['output_tokens']
+        FORCE_GENERATE_NEW = settings['force_generate_new']
+        GENERATE_SCRIBBLES = settings['generate_scribbles']
+        args.beginning_day = settings['beginning_day']
+        ending_day = settings['ending_day']
     if not DATABASE.is_file():
         raise FileNotFoundError(f"Receiver database not found: {DATABASE}")
     # Snapshot the available records once; this script does not wait for live gameplay.
     with sqlite3.connect(DATABASE.resolve().as_uri() + "?mode=ro", uri=True) as db:
         events = [json.loads(row[0]) for row in db.execute("SELECT payload FROM events ORDER BY rowid")]
-    session_id, timeline = game_timeline(events, GAME_ID, args.session)
+    session_id, timeline = game_timeline(events, GAME_ID)
     output = OUTPUT_DIRECTORY / GAME_ID / session_id
     print(f"Game {GAME_ID}, timeline {session_id}. Output: {output}", flush=True)
-    generate_days(timeline, output, args.beginning_day, ENDING_DAY)
+    book = ensure_book(timeline, output)
+    generate_prologue(book, output, model=MODEL, url=OLLAMA_URL,
+                      context_tokens=CONTEXT_TOKENS, output_tokens=OUTPUT_TOKENS)
+    generate_days(timeline, output, args.beginning_day, ending_day)
 
 
 if __name__ == "__main__":

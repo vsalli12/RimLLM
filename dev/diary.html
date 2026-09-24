@@ -28,18 +28,22 @@
   #status { color: #756650; line-height: 1.6; }
   @media (max-width: 600px) { main { margin: 0 12px 24px; padding: 24px; } header { margin-top: 24px; } #text { font-size: 18px; } }
 </style>
+<link rel="stylesheet" href="/theme.css">
+<script src="/theme.js"></script>
 <header>
   <div class="brand">RimChronicle</div>
   <h1>The colony diary</h1>
   <div class="controls">
-    <label for="diary">Diary</label><select id="diary" aria-label="Game and timeline"></select>
+    <label for="diary">Diary</label><select id="diary" aria-label="Story"></select>
     <button id="refresh">Refresh</button>
+    <button type="button" id="theme-toggle">Night mode</button>
+    <a href="/">Settings</a>
   </div>
 </header>
 <main>
   <nav aria-label="Diary pages">
     <button id="previous" disabled>← Previous</button>
-    <label for="day">Day</label><select id="day" disabled></select>
+    <label for="day">Page</label><select id="day" disabled></select>
     <button id="next" disabled>Next →</button>
     <span id="position"></span>
   </nav>
@@ -50,7 +54,7 @@
   const element = id => document.getElementById(id);
   let diaries = [], page = 0;
   const selected = () => diaries[Number(element('diary').value)];
-  const pageLabel = entry => `Day ${entry.day}${entry.page_title ? ' — ' + entry.page_title : ''}`;
+  const pageLabel = entry => entry.kind === 'prologue' ? 'Prologue' : `Day ${entry.day}${entry.page_title ? ' — ' + entry.page_title : ''}`;
   function showPage() {
     const entries = selected()?.entries || [];
     const entry = entries[page];
@@ -72,6 +76,7 @@
   }
   function chooseDiary(savedDay) {
     const entries = selected()?.entries || [];
+    element('diary').title = selected() ? `Game ${selected().game} / Timeline ${selected().timeline}` : '';
     element('day').replaceChildren(...entries.map((entry, i) => new Option(pageLabel(entry), i)));
     element('day').disabled = !entries.length;
     page = Math.max(0, entries.findIndex(entry => entry.day === savedDay));
@@ -85,7 +90,7 @@
       if (!response.ok) throw new Error('Unable to load diary');
       diaries = await response.json();
       element('diary').replaceChildren(...diaries.map((diary, i) => {
-        const option = new Option(`Game ${diary.game.slice(0, 8)} · Timeline ${diary.timeline.slice(0, 8)}`, i);
+        const option = new Option(diary.title || 'The colony diary', i);
         option.title = `Game ${diary.game} · Timeline ${diary.timeline}`;
         return option;
       }));

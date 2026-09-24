@@ -44,18 +44,26 @@ def load_diaries():
     diaries = []
     for folder in (DIRECTORY / "chronicles").glob("*/*"):
         entries = []
-        for path in folder.glob("day*.json"):
+        title = "The colony diary"
+        try:
+            book = json.loads((folder / "book.json").read_text(encoding="utf-8"))
+            if isinstance(book.get("title"), str) and book["title"].strip():
+                title = book["title"]
+        except (OSError, ValueError, AttributeError):
+            pass
+        for path in [folder / "prologue.json", *folder.glob("day*.json")]:
             try:
                 entry = json.loads(path.read_text(encoding="utf-8"))
                 if type(entry.get("day")) is int and isinstance(entry.get("chronicle"), str):
-                    title = entry.get("page_title")
+                    page_title = entry.get("page_title")
                     entries.append({"day": entry["day"], "text": entry["chronicle"],
-                                    "page_title": title.strip() if isinstance(title, str) else "",
+                                    "kind": "prologue" if path.name == "prologue.json" else "day",
+                                    "page_title": page_title.strip() if isinstance(page_title, str) else "",
                                     "image_url": scribble_url(entry, folder)})
             except (OSError, ValueError, AttributeError):
                 continue  # A generation may still be writing this file.
         if entries:
-            diaries.append({"game": folder.parent.name, "timeline": folder.name,
+            diaries.append({"game": folder.parent.name, "timeline": folder.name, "title": title,
                             "entries": sorted(entries, key=lambda entry: entry["day"]),
                             "updated": folder.stat().st_mtime})
     return sorted(diaries, key=lambda diary: diary["updated"], reverse=True)
@@ -63,7 +71,10 @@ def load_diaries():
 
 class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
-        if self.path == "/":
+        if self.path in ("/theme.css", "/theme.js"):
+            body = (DIRECTORY / self.path[1:]).read_bytes()
+            content_type = "text/css; charset=utf-8" if self.path.endswith('.css') else "text/javascript; charset=utf-8"
+        elif self.path == "/":
             body = (DIRECTORY / "diary.html").read_bytes()
             content_type = "text/html; charset=utf-8"
         elif self.path == "/diaries":

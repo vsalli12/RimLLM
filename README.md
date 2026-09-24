@@ -23,6 +23,49 @@ diary means neutral narration. LLM story generation is not implemented yet.
 
 ## Local receiver
 
+### Local dashboard
+
+Run `python dev/main.py`, then open **http://127.0.0.1:8766**. Stop
+`host_frontend.py` first if it is already using that port. The dashboard hosts
+the diary viewer at `/diary`, checks receiver/ComfyUI/Ollama status every five
+seconds, and saves diary generation settings in `dev/diary_settings.json`.
+Use `python dev/list_games.py` to find a recorded game ID, enter it in the
+dashboard, and choose **Save & generate**. Progress and errors appear in the
+terminal; the dashboard reports completion. Existing entries are skipped unless
+you enable regeneration. Settings are frozen for each run; later edits apply
+to the next run. Stopping the dashboard also stops its active generation.
+
+The receiver starts and stops with the dashboard. Stop any standalone receiver
+before starting the dashboard. Start Ollama and ComfyUI separately. ComfyUI is only needed for
+illustrations. The dashboard itself uses Python's standard library; generation
+uses the existing pipeline and its dependencies. The model and token settings
+apply to diary prose; cleanup and image prompt passes retain their own settings.
+The latest session and its saved ancestry are always selected automatically.
+Each day uses the last non-null carrier recorded that day, and only packets
+tagged with that carrier are included. Uncarried days produce no diary entry.
+A handoff excludes packets tagged with the previous carrier, including their
+death if it happened before the successor took over. Existing entries must be
+regenerated to apply this rule.
+The generator can also consume saved settings with
+`python dev/generate_chronicles.py --settings dev/diary_settings.json`.
+
+Each book keeps its first recorded day's protagonist in its title (for example,
+**Engie's story**), even after another carrier takes over. `book.json` stores
+that identity and the opening context. Before daily generation, a separate
+prologue uses the protagonist's recorded background, scenario, and map conditions
+available at their first diary pickup. It appears before Day 1 and is reused on
+subsequent runs, including daily regeneration. It is not added to factual story
+memory. If recording began after Day 1, the earliest available carried day supplies
+the opening; missing history is not invented.
+
+Use **Night mode** on either page to switch the dashboard and diary to a dark
+palette. The browser remembers the preference. In the dashboard, **Load diary
+tellers** uses the entered game ID and its latest save ancestry. Select a teller,
+edit their cached backstory, and click **Override diary teller personality**.
+This replaces that character's backstory JSON for this game. Future generation
+uses the override without another backstory LLM call; existing pages and cached
+prologues stay unchanged. Overrides can be saved once an active generation finishes.
+
 From this repository's terminal:
 
 ```powershell

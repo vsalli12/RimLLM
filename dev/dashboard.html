@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RimChronicle · Dashboard</title>
+<style>
+:root{color-scheme:light}*{box-sizing:border-box}body{margin:0;background:#ece7dc;color:#332e26;font:15px system-ui,sans-serif}main{max-width:960px;margin:48px auto;padding:0 24px}.brand{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#756650}header{display:flex;justify-content:space-between;align-items:center;gap:20px}h1{font:36px Georgia,serif;margin:12px 0}h2{font:24px Georgia,serif;margin-top:0}a{color:#68502e}p,.hint{color:#756650;line-height:1.6}.services{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:28px 0}.card,section{background:#faf7ef;border:1px solid #c9bfad;border-radius:10px;padding:22px}.state{display:block;margin-top:12px;color:#756650}.on{color:#316b4e}.off{color:#984735}.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}label{display:block}input:not([type=checkbox]){display:block;width:100%;margin-top:7px;padding:11px;border:1px solid #c9bfad;border-radius:5px;background:#fffdf8;color:inherit;font:inherit}.hint{font-size:12px;display:block;margin-top:6px}.checks{display:grid;gap:14px;margin:24px 0}button{padding:12px 18px;border:1px solid #80643e;border-radius:5px;background:#80643e;color:white;font:inherit;cursor:pointer}button.secondary{background:transparent;color:#68502e}button:disabled{opacity:.5;cursor:default}.actions{display:flex;gap:12px;flex-wrap:wrap}:focus-visible{outline:3px solid #b78b48;outline-offset:3px}#message{min-height:24px}#job{margin-bottom:0}@media(max-width:600px){.services,.grid{grid-template-columns:1fr}header{align-items:start}main{margin-top:24px}}
+</style>
+<link rel="stylesheet" href="/theme.css">
+<script src="/theme.js"></script>
+<main>
+<header><div><div class="brand">RimChronicle · Local workspace</div><h1>Your colony, chronicled.</h1></div><div class="header-actions"><button type="button" id="theme-toggle">Night mode</button><a href="/diary">Open diary →</a></div></header>
+<p>Configure the next diary run and check your local services.</p>
+<div class="services" aria-live="polite">
+<div class="card">Receiver<span class="state" id="receiver">Checking…</span></div>
+<div class="card">ComfyUI<span class="state" id="comfyui">Checking…</span></div>
+<div class="card">Ollama<span class="state" id="ollama">Checking…</span></div>
+</div>
+<section><h2>Diary generation</h2>
+<form id="settings">
+<div class="grid">
+<label>Game ID<input name="game_id" placeholder="Playthrough ID" pattern="[A-Za-z0-9_-]*"><span class="hint">Find recorded game IDs with python dev/list_games.py.</span></label>
+<label>Diary model<input name="model" list="models" required><datalist id="models"></datalist><span class="hint">Models available in Ollama. Cleanup and image prompts use their existing pipeline settings.</span></label>
+<label>Beginning day<input name="beginning_day" type="number" min="1" max="1000000" required></label>
+<label>Ending day<input name="ending_day" type="number" min="1" max="1000000" placeholder="All recorded days"></label>
+<label>Context tokens<input name="context_tokens" type="number" min="1" max="1000000" required></label>
+<label>Output tokens<input name="output_tokens" type="number" min="1" max="1000000" required></label>
+</div>
+<div class="checks"><label><input name="generate_scribbles" type="checkbox"> Generate illustrations with ComfyUI</label><label><input name="force_generate_new" type="checkbox"> Regenerate existing entries (overwrites saved prose)</label></div>
+<div class="actions"><button type="submit" id="save" disabled>Save settings</button><button type="button" class="secondary" id="generate" disabled>Save & generate</button></div>
+<p id="message" role="status"></p><p id="job" role="status">No generation started in this dashboard session.</p>
+</form></section>
+<section id="personality-panel" aria-labelledby="personality-heading">
+<h2 id="personality-heading">Diary teller personality</h2>
+<p>Edit the saved backstory to personalize the narrator's voice. Choose a teller from the game ID above.</p>
+<div class="actions"><button type="button" class="secondary" id="load-personality">Load diary tellers</button></div>
+<label for="teller">Diary teller</label><select id="teller" disabled></select>
+<label for="backstory">Personality and backstory</label>
+<textarea id="backstory" maxlength="20000" disabled placeholder="Load a diary teller to view or replace their generated backstory."></textarea>
+<button type="button" id="override-personality" disabled>Override diary teller personality</button>
+<p class="hint">Applies to future generation for this character in this game. Existing diary pages and the saved prologue stay unchanged. Regenerate daily entries to rewrite them with this voice.</p>
+<p id="personality-status" role="status"></p>
+</section>
+<p class="hint">Service status refreshes every 5 seconds. The receiver runs with this dashboard. Start Ollama and ComfyUI separately. The latest session and its saved ancestry are selected automatically. Generation progress appears in the terminal running main.py.</p>
+</main>
+<script>
+const form=document.querySelector('form'), message=document.querySelector('#message'), generate=document.querySelector('#generate');
+let loaded=false, busy=false, running=false;
+function buttons(){document.querySelector('#save').disabled=!loaded||busy;generate.disabled=!loaded||busy||running;}
+async function api(path,body){const response=await fetch(path,body===undefined?{}:{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const data=await response.json();if(!response.ok)throw Error(data.error||'Request failed');return data;}
+function values(){const data={};for(const el of form.elements){if(!el.name)continue;data[el.name]=el.type==='checkbox'?el.checked:el.type==='number'?(el.value===''?null:Number(el.value)):el.value;}return data;}
+async function save(start){if(!form.reportValidity())return;busy=true;buttons();try{await api('/api/settings',values());message.textContent='Settings saved.';if(start){await api('/api/generate',{});running=true;message.textContent='Generation started. Follow progress in the terminal.';}}catch(error){message.textContent=error.message;}finally{busy=false;buttons();}}
+form.addEventListener('submit',event=>{event.preventDefault();save(false);});generate.addEventListener('click',()=>save(true));
+async function refresh(){try{const data=await api('/api/status');for(const [name,status] of Object.entries(data.services)){const el=document.getElementById(name);el.textContent=status.online?'● On':'● Off / unreachable';el.className='state '+(status.online?'on':'off');}const models=document.querySelector('#models');models.replaceChildren(...(data.services.ollama.models||[]).map(name=>{const option=document.createElement('option');option.value=name;return option;}));running=data.generation.running;const code=data.generation.exit_code;document.querySelector('#job').textContent=running?'Generating diary…':code===0?'Generation completed. Open the diary to read it.':code!==null?'Generation failed. See the terminal for details.':'No generation started in this dashboard session.';}catch(error){for(const name of ['receiver','comfyui','ollama']){const el=document.getElementById(name);el.textContent='Status unavailable';el.className='state';}}finally{buttons();setTimeout(refresh,5000);}}
+api('/api/settings').then(data=>{for(const [key,value] of Object.entries(data)){const el=form.elements.namedItem(key);if(el.type==='checkbox')el.checked=value;else el.value=value??'';}loaded=true;buttons();}).catch(error=>message.textContent='Could not load settings: '+error.message);
+refresh();
+const teller=document.querySelector('#teller'), backstory=document.querySelector('#backstory');
+const personalityStatus=document.querySelector('#personality-status'), overrideButton=document.querySelector('#override-personality');
+let tellers=[], personalityGame='', personalityRequest=0;
+function showPersonality(){
+  const person=tellers.find(item=>item.pawn_id===teller.value);
+  backstory.value=person?.backstory||'';
+  backstory.disabled=!person;overrideButton.disabled=!person;
+  personalityStatus.textContent=person ? (person.backstory?'Saved backstory loaded.':'No generated backstory yet. You can supply one now.') : 'No recorded diary tellers for this game.';
+}
+function invalidatePersonality(){
+  personalityRequest++;tellers=[];personalityGame='';teller.replaceChildren();teller.disabled=true;backstory.value='';backstory.disabled=true;overrideButton.disabled=true;
+  personalityStatus.textContent='Load diary tellers for this game.';
+}
+form.elements.game_id.addEventListener('input',invalidatePersonality);
+teller.addEventListener('change',showPersonality);
+document.querySelector('#load-personality').addEventListener('click',async()=>{
+  invalidatePersonality();const request=personalityRequest, game=form.elements.game_id.value.trim();
+  personalityStatus.textContent='Loading diary tellers...';
+  try{
+    const data=await api('/api/personalities?game_id='+encodeURIComponent(game));
+    if(request!==personalityRequest)return;
+    tellers=data.narrators;personalityGame=game;
+    teller.replaceChildren(...tellers.map(item=>new Option(item.name,item.pawn_id)));
+    teller.value=data.selected||'';teller.disabled=!tellers.length;showPersonality();
+  }catch(error){if(request===personalityRequest)personalityStatus.textContent=error.message;}
+});
+overrideButton.addEventListener('click',async()=>{
+  if(!backstory.value.trim()){personalityStatus.textContent='Enter a personality or backstory first.';return;}
+  const game=personalityGame, pawn=teller.value, text=backstory.value, request=personalityRequest;
+  overrideButton.disabled=true;
+  try{
+    const data=await api('/api/personalities',{game_id:game,pawn_id:pawn,backstory:text});
+    if(request!==personalityRequest)return;
+    const person=tellers.find(item=>item.pawn_id===pawn);if(person)person.backstory=data.backstory;
+    personalityStatus.textContent='Personality saved for '+(person?.name||pawn)+'. Future generation will use this text.';
+  }catch(error){if(request===personalityRequest)personalityStatus.textContent=error.message;}
+  finally{if(request===personalityRequest)overrideButton.disabled=!tellers.length;}
+});
+</script>
+</html>

@@ -1,0 +1,18 @@
+﻿/* Shared palette overrides for the dashboard and diary reader. */
+html[data-theme="dark"]{color-scheme:dark}
+html[data-theme="dark"] body{background:#171b20;color:#e8e0d2}
+html[data-theme="dark"] main:not(:has(.services)),html[data-theme="dark"] .card,html[data-theme="dark"] section{background:#222830;border-color:#48505a;box-shadow:none}
+html[data-theme="dark"] p,html[data-theme="dark"] .hint,html[data-theme="dark"] .brand,html[data-theme="dark"] #status,html[data-theme="dark"] #position,html[data-theme="dark"] .state{color:#bdb7ac}
+html[data-theme="dark"] input:not([type="checkbox"]),html[data-theme="dark"] select,html[data-theme="dark"] textarea{background:#191e24;color:#eee6d8;border-color:#59616b}
+html[data-theme="dark"] button{background:#675538;color:#fff3dc;border-color:#aa8c5c}
+html[data-theme="dark"] button:hover:enabled{background:#806a47}
+html[data-theme="dark"] a,html[data-theme="dark"] button.secondary{color:#e6c58f}
+html[data-theme="dark"] nav{border-color:#48505a}
+html[data-theme="dark"] .on{color:#90d3aa}
+html[data-theme="dark"] .off{color:#f2a294}
+html[data-theme="dark"] #scribble{mix-blend-mode:normal;border-radius:6px}
+#theme-toggle{font:14px system-ui,sans-serif;white-space:nowrap}
+.header-actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+#personality-panel{margin-top:24px}
+#personality-panel select{max-width:100%;padding:10px;margin:8px 0 16px;font:inherit}
+#personality-panel textarea{display:block;width:100%;min-height:200px;resize:vertical;padding:14px;margin:8px 0 16px;border:1px solid #c9bfad;border-radius:5px;background:#fffdf8;color:inherit;font:15px/1.6 system-ui,sans-serif}
