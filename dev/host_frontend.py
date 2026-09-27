@@ -40,23 +40,42 @@ def scribble_url(entry, folder):
     return url if image_file(url) else None
 
 
+def narrator_name(entry, path, book):
+    name = entry.get("narrator_name")
+    if isinstance(name, str) and name.strip():
+        return name.strip()
+    if path.name == "prologue.json":
+        opening = book.get("opening", {})
+        name = opening.get("protagonist_name") if isinstance(opening, dict) else None
+        return name.strip() if isinstance(name, str) else ""
+    # Older entries saved the selected writer only in their generation prompt.
+    try:
+        prompt = path.with_suffix(".prompt.txt").read_text(encoding="utf-8")
+    except (OSError, ValueError):
+        return ""
+    match = re.search(r"^The writer's background:\n([^\n]+?)(?: is a [^\n]*-year-old |; background unavailable\.)", prompt, re.MULTILINE)
+    return match.group(1).strip() if match else ""
+
+
 def load_diaries():
     diaries = []
     for folder in (DIRECTORY / "chronicles").glob("*/*"):
         entries = []
         title = "The colony diary"
+        book = {}
         try:
             book = json.loads((folder / "book.json").read_text(encoding="utf-8"))
             if isinstance(book.get("title"), str) and book["title"].strip():
                 title = book["title"]
         except (OSError, ValueError, AttributeError):
-            pass
+            book = {}
         for path in [folder / "prologue.json", *folder.glob("day*.json")]:
             try:
                 entry = json.loads(path.read_text(encoding="utf-8"))
                 if type(entry.get("day")) is int and isinstance(entry.get("chronicle"), str):
                     page_title = entry.get("page_title")
                     entries.append({"day": entry["day"], "text": entry["chronicle"],
+                                    "narrator_name": narrator_name(entry, path, book),
                                     "kind": "prologue" if path.name == "prologue.json" else "day",
                                     "page_title": page_title.strip() if isinstance(page_title, str) else "",
                                     "image_url": scribble_url(entry, folder)})

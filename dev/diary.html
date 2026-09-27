@@ -23,6 +23,7 @@
   #position { margin-left: auto; color: #7a6e5b; }
   h2 { font-size: 30px; font-weight: normal; margin: 36px 0 24px; }
   #text { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 19px; line-height: 1.85; }
+  #signature { text-align: right; font-size: 19px; font-style: italic; overflow-wrap: anywhere; }
   #scribble { display: block; max-width: 100%; height: auto; margin: 32px auto 0; mix-blend-mode: multiply; }
   #scribble[hidden] { display: none; }
   #status { color: #756650; line-height: 1.6; }
@@ -48,7 +49,7 @@
     <span id="position"></span>
   </nav>
   <p id="status" role="status">Loading diary…</p>
-  <article><h2 id="heading"></h2><div id="text"></div><img id="scribble" hidden alt=""></article>
+  <article><h2 id="heading"></h2><div id="text"></div><p id="signature" hidden></p><img id="scribble" hidden alt=""></article>
 </main>
 <script>
   const element = id => document.getElementById(id);
@@ -60,6 +61,8 @@
     const entry = entries[page];
     element('heading').textContent = entry ? pageLabel(entry) : '';
     element('text').textContent = entry?.text || '';
+    element('signature').textContent = entry?.narrator_name ? `-${entry.narrator_name}` : '';
+    element('signature').hidden = !entry?.narrator_name;
     const scribble = element('scribble');
     scribble.hidden = true;
     scribble.removeAttribute('src');

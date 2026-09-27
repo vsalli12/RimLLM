@@ -16,7 +16,7 @@ from diary_book import ensure_book, generate_prologue
 GAME_ID = "34593c2935574ecca86402bcd1d688f3"
 BEGINNING_DAY = 1
 ENDING_DAY = None
-MODEL = "gemma3:12b"
+MODEL = "qwen3.5:4b"
 DIRECTORY = Path(__file__).resolve().parent
 DATABASE = DIRECTORY / "events.sqlite3"
 OUTPUT_DIRECTORY = DIRECTORY / "chronicles"
@@ -121,7 +121,7 @@ def generate_days(events, output_directory, beginning_day, ending_day=None):
             json={"model": MODEL, "messages": [
                 {"role": "system", "content": prompt["system"]},
                 {"role": "user", "content": enriched_prompt},
-            ], "stream": False, "format": "json",
+            ], "stream": False, "format": "json", 'think': True,
                   "options": {"num_ctx": CONTEXT_TOKENS, "num_predict": OUTPUT_TOKENS}},
             timeout=600,
         )
@@ -145,7 +145,8 @@ def generate_days(events, output_directory, beginning_day, ending_day=None):
             ) from None
         stem.with_suffix(".json").write_text(
             json.dumps({"day": day, "game_id": session["playthrough_id"],
-                        "session_id": session["session_id"], "model": MODEL, **story},
+                        "session_id": session["session_id"], "model": MODEL, **story,
+                        "narrator_name": session.get("narrator_name", "")},
                        ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         stem.with_suffix(".txt").write_text(story["chronicle"] + "\n", encoding="utf-8")
         save_story(story, session, day, memory_path)

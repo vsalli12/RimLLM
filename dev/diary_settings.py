@@ -5,7 +5,7 @@ from pathlib import Path
 
 SETTINGS_PATH = Path(__file__).with_name("diary_settings.json")
 DEFAULTS = dict(game_id="", beginning_day=1, ending_day=None,
-                model="gemma3:12b", context_tokens=16384, output_tokens=4096,
+                model="qwen3.5:4b", context_tokens=16384, output_tokens=4096,
                 force_generate_new=False, generate_scribbles=False)
 
 

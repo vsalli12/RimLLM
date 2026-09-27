@@ -159,7 +159,7 @@ Return only valid JSON in exactly this structure:
 {
 "page_title": "...",
 "chronicle": "...",
-"story_bits": []
+"story_bits": ["...", "...", ...]
 }
 
 "page_title" is a nonempty title of at most three words for this specific day, grounded in its recorded events. Do not include the day number.
@@ -167,6 +167,8 @@ Return only valid JSON in exactly this structure:
 "chronicle" contains the finished first-person diary entry.
 
 "story_bits" contains only a small number of genuinely noteworthy events from the recorded session that may be useful as long-term story history later. Do not create story bits for routine work, ordinary meals, minor movement, trivial social interactions, or other mundane activity.
+
+The ONLY acceptable return format of story_bits is a list of strings.
 
 Each story bit should be a concise factual summary of one meaningful event. Prefer events with lasting narrative significance, such as major injuries, deaths, rescues, raids, betrayals, new relationships, breakups, major conflicts, important arrivals or departures, exceptional achievements, disasters, major discoveries, or other events likely to matter in a future chronicle.
 
@@ -225,11 +227,12 @@ class Pawn:
         response = requests.post(
             'http://localhost:11434/api/chat',
             json={
-                'model': "gemma3:12b",
+                'model': "qwen3.5:4b",
                 'messages': [
                     {'role': 'system', 'content': system},
                     {'role': 'user', 'content': prompt},
                 ],
+                'think': False,
                 'stream': False,
             },
             timeout=600,
@@ -243,6 +246,7 @@ class Pawn:
             raise RuntimeError(f"Backstory generation for {self.name} failed: {payload['error']}")
         response.raise_for_status()
         message = payload.get('message') if isinstance(payload, dict) else None
+        print(message)
         content = message.get('content') if isinstance(message, dict) else None
         if not isinstance(content, str) or not content.strip():
             raise ValueError(f"Ollama returned no backstory text for {self.name}")
@@ -983,6 +987,7 @@ def build_document(events, day=DAY, memory=None, backstory_cache=None):
                   + ("\n\nMood context (one summary per colonist; not proof of motive):\n" + "\n".join(mood_lines) if mood_lines else "")
                   + history_text)
         sessions.append({"playthrough_id": playthrough_id, "session_id": session_id,
+                         "narrator_name": writer.name if writer else names.get(diary.carrier_id, ""),
                          "source_end_sequence": source_end_sequence,
                          "event_count": source_event_count, "event_log": event_log, "prompt": {
                              "system": SYSTEM_PROMPT,
