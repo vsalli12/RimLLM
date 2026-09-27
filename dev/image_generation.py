@@ -98,6 +98,7 @@ def ensure_entry_scribble(entry_path, force=False):
     if not isinstance(image_prompt, str) or not image_prompt.strip():
         print(f"Creating image prompt for {entry_path.stem}...", flush=True)
         image_prompt = RAG_main.generate_image_prompt(chronicle)
+        print(image_prompt)
         if not image_prompt.strip():
             raise ValueError("No drawable scene returned for this entry")
         metadata = {"key": key, "source_hash": digest, "prompt": image_prompt,

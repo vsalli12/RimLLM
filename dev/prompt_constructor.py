@@ -906,10 +906,10 @@ def anonymize_enemies(earlier, records):
 
 
 def narrator_window(records):
-    """Only packets recorded while the day's last carrier held the diary."""
+    """Choose the day's last carrier without discarding the day's context."""
     carrier = next((e.get("diary_carrier_id") for e in reversed(records)
                     if e.get("diary_carrier_id")), None)
-    return carrier, [e for e in records if carrier and e.get("diary_carrier_id") == carrier]
+    return carrier, records if carrier else []
 
 
 def build_document(events, day=DAY, memory=None, backstory_cache=None):

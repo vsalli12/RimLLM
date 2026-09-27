@@ -1,4 +1,4 @@
-# RimChronicle
+# RimLLM
 
 A colony diary for RimWorld 1.6, targeting .NET Framework 4.7.2.
 
@@ -41,11 +41,11 @@ illustrations. The dashboard itself uses Python's standard library; generation
 uses the existing pipeline and its dependencies. The model and token settings
 apply to diary prose; cleanup and image prompt passes retain their own settings.
 The latest session and its saved ancestry are always selected automatically.
-Each day uses the last non-null carrier recorded that day, and only packets
-tagged with that carrier are included. Uncarried days produce no diary entry.
-A handoff excludes packets tagged with the previous carrier, including their
-death if it happened before the successor took over. Existing entries must be
-regenerated to apply this rule.
+Each day uses the last non-null carrier recorded that day. All of that day's
+packets remain available, including profiles before pickup, ownership changes,
+and deaths recorded while the diary was unassigned. Days with no recorded
+carrier still produce no diary entry. Regenerate existing entries to restore
+context previously excluded by the carrier filter.
 The generator can also consume saved settings with
 `python dev/generate_chronicles.py --settings dev/diary_settings.json`.
 

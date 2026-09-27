@@ -71,7 +71,15 @@ def generate_days(events, output_directory, beginning_day, ending_day=None):
             print(f"Stopping at day {day} because ENDING_DAY={ending_day}.", flush=True)
             break
 
+        
         stem = output_directory / f"day{day:03d}"
+        day_events = (e for e in events if e.get("game_day") == day)
+        stem.with_suffix(".raw_event_log.txt").write_text(
+            "\n".join(json.dumps(e, ensure_ascii=False) for e in day_events) + "\n",
+            encoding="utf-8",
+        )
+
+        
         if stem.with_suffix(".json").exists() and not FORCE_GENERATE_NEW:
             print(f"Skipping day {day}: {stem.with_suffix('.json')} already exists.", flush=True)
             illustrate_entry(stem.with_suffix(".json"))
