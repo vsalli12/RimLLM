@@ -16,7 +16,7 @@ from diary_book import ensure_book, generate_prologue
 GAME_ID = "34593c2935574ecca86402bcd1d688f3"
 BEGINNING_DAY = 1
 ENDING_DAY = None
-MODEL = "qwen3.5:4b"
+MODEL = "gemma3:12b"
 DIRECTORY = Path(__file__).resolve().parent
 DATABASE = DIRECTORY / "events.sqlite3"
 OUTPUT_DIRECTORY = DIRECTORY / "chronicles"

@@ -113,8 +113,8 @@ def make_handler(db):
             except sqlite3.Error as error:
                 self.reply(500, f"Storage error: {error}")
                 return
-            for event in events:
-                print(json.dumps(event, ensure_ascii=False), flush=True)
+            #for event in events:
+            #    print(json.dumps(event, ensure_ascii=False), flush=True)
             self.reply(200, batch_id)
 
         def log_message(self, format, *args):

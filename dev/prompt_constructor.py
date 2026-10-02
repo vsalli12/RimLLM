@@ -1,4 +1,4 @@
-"""
+﻿"""
 The plan:
 
 We will construct the payload in entirely readable format. Example what we will need:
@@ -227,7 +227,7 @@ class Pawn:
         response = requests.post(
             'http://localhost:11434/api/chat',
             json={
-                'model': "qwen3.5:4b",
+                'model': "gemma3:12b",
                 'messages': [
                     {'role': 'system', 'content': system},
                     {'role': 'user', 'content': prompt},

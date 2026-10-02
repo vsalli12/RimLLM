@@ -245,7 +245,7 @@ def add_context(prompt, glossary_path=None):
 def LLM_Pass(user_prompt, system_prompt, json_output=False):
     """Return a parsed object for JSON mode, or a string for prose mode."""
     payload = {
-        "model": "qwen3.5:4b",
+        "model": "gemma3:12b",
         "messages": [
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_prompt}
