@@ -11,7 +11,7 @@ The LLM and the optional image generation runs locally. A GPU is needed with opt
 - RimWorld 1.6 and the [Harmony](https://steamcommunity.com/sharedfiles/filedetails/?id=2009463077) mod
 - Python 3.10 or newer and the packages in `requirements.txt`
 - [Ollama](https://ollama.com/) with a chat model for diary generation
-- [gemma3:12b] is the recommended model to use
+  * gemma3:12b is the recommended model to use
 - ComfyUI is optional and only needed for diary illustrations
 
 ## Installation
