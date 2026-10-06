@@ -7,7 +7,7 @@ using System.Net;
 using System.Text;
 using System.Threading;
 
-namespace RimChronicle
+namespace RimLLM
 {
     internal static class EventDelivery
     {
@@ -23,7 +23,7 @@ namespace RimChronicle
         {
             if (started) return;
             started = true;
-            worker = new Thread(() => Run(directory)) { IsBackground = true, Name = "RimChronicle delivery" };
+            worker = new Thread(() => Run(directory)) { IsBackground = true, Name = "RimLLM delivery" };
             AppDomain.CurrentDomain.ProcessExit += (sender, args) => FlushOnExit();
             worker.Start();
         }

@@ -3,7 +3,7 @@ using System.Collections;
 using System.Globalization;
 using System.Text;
 
-namespace RimChronicle
+namespace RimLLM
 {
     // Only plain dictionaries, lists and scalar values cross the worker-thread boundary.
     internal static class EventJson

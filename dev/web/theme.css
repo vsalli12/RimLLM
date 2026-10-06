@@ -15,4 +15,4 @@ html[data-theme="dark"] #scribble{mix-blend-mode:normal;border-radius:6px}
 .header-actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
 #personality-panel{margin-top:24px}
 #personality-panel select{max-width:100%;padding:10px;margin:8px 0 16px;font:inherit}
-#personality-panel textarea{display:block;width:100%;min-height:200px;resize:vertical;padding:14px;margin:8px 0 16px;border:1px solid #c9bfad;border-radius:5px;background:#fffdf8;color:inherit;font:15px/1.6 system-ui,sans-serif}
+#personality-panel textarea{display:block;width:100%;min-height:200px;resize:vertical;padding:14px;margin:8px 0 16px;border:1px solid #c9bfad;border-radius:5px;background:#201f1b;color:inherit;font:15px/1.6 system-ui,sans-serif}

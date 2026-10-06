@@ -13,7 +13,7 @@ from story_memory import lineage, load_memory, parse_story, save_story
 from diary_book import ensure_book, generate_prologue
 
 # Settings: GAME_ID is the packets' playthrough_id, not a session index.
-GAME_ID = "34593c2935574ecca86402bcd1d688f3"
+GAME_ID = ""
 BEGINNING_DAY = 1
 ENDING_DAY = None
 MODEL = "gemma3:12b"

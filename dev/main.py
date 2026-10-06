@@ -1,4 +1,4 @@
-﻿"""Local RimChronicle dashboard: python dev/main.py."""
+﻿"""Local RimLLM dashboard: python dev/main.py."""
 import json
 import subprocess
 import sys
@@ -67,14 +67,14 @@ class Handler(DiaryHandler):
                 job = {"running": generation is not None and code is None, "exit_code": code}
             self.reply_json({"services": services, "generation": job})
         elif self.path == "/":
-            body = (DIRECTORY / "dashboard.html").read_bytes()
+            body = (DIRECTORY / "web/dashboard.html").read_bytes()
             self.send_response(200)
             self.send_header("Content-Type", "text/html; charset=utf-8")
             self.send_header("Content-Length", str(len(body)))
             self.end_headers()
             self.wfile.write(body)
         else:
-            if self.path in ("/diary", "/diary/"):
+            if self.path in ("/diary", "/diary/", "/web/diary", "/web/diary/"):
                 self.path = "/"
             super().do_GET()
 
@@ -149,7 +149,7 @@ def managed_receiver(port=8765, database=DIRECTORY / "events.sqlite3"):
 
 def main():
     with ThreadingHTTPServer(("127.0.0.1", PORT), Handler) as server, managed_receiver():
-        print(f"RimChronicle: http://127.0.0.1:{PORT} (Ctrl+C to stop)", flush=True)
+        print(f"RimLLM: http://127.0.0.1:{PORT} (Ctrl+C to stop)", flush=True)
         try:
             server.serve_forever()
         except KeyboardInterrupt:

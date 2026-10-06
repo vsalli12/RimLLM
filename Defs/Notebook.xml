@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Defs>
   <ThingDef>
-    <defName>RimChronicle_Notebook</defName>
+    <defName>RimLLM_Notebook</defName>
     <label>Diary</label>
     <description>A diary waiting for someone to tell the colony's story. Select a colonist and right-click it to pick it up. It stays in their inventory even when they are downed. Drop it from their Gear tab to pass it to someone else.</description>
-    <thingClass>RimChronicle.Notebook</thingClass>
+    <thingClass>RimLLM.Notebook</thingClass>
     <category>Item</category>
     <selectable>true</selectable>
     <altitudeLayer>Item</altitudeLayer>

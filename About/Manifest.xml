@@ -8,7 +8,7 @@ Documentation: https://github.com/fluffy-mods/ModManager/blob/master/ForModders.
 
 <Manifest>
 	<!-- An identifier for the mod. Typically follows the form "ModName". -->
-	<identifier>RimChronicle</identifier>
+	<identifier>RimLLM</identifier>
 
 	<!-- The version of the mod. Follows the form "major.minor.build.revision". Must have 2-4 elements. -->
 	<version>0.1.0</version>

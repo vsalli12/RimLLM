@@ -1,5 +1,5 @@
 ﻿(() => {
-  const key = 'rimchronicle-theme';
+  const key = 'RimLLM-theme';
   let saved;
   try { saved = localStorage.getItem(key); } catch (_) {}
   let dark = saved === 'dark' || (!saved && matchMedia('(prefers-color-scheme: dark)').matches);

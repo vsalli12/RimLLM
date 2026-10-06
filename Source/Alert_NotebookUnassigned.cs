@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using RimWorld;
 using Verse;
 
-namespace RimChronicle
+namespace RimLLM
 {
     public sealed class Alert_NotebookUnassigned : Alert
     {
@@ -20,7 +20,7 @@ namespace RimChronicle
             {
                 if (!map.IsPlayerHome)
                     continue;
-                foreach (Thing thing in map.listerThings.ThingsOfDef(NotebookDefOf.RimChronicle_Notebook))
+                foreach (Thing thing in map.listerThings.ThingsOfDef(NotebookDefOf.RimLLM_Notebook))
                     if (!thing.Fogged())
                         notebooks.Add(thing);
             }

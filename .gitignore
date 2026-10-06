@@ -1,6 +1,6 @@
 bin/
 obj/
-Assemblies/
+Assemblies/*.pdb
 .vs/
 *.user
 .tools/

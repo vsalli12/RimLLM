@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using HarmonyLib;
 using Verse;
 
-namespace RimChronicle
+namespace RimLLM
 {
     // Temporarily exclude only notebooks while vanilla processes the rest of the inventory.
     // Finalizers restore them even if another mod throws during the original method.

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using RimWorld;
 using Verse;
 
-namespace RimChronicle
+namespace RimLLM
 {
     // One notebook per save, including when its owner travels to another map or caravan.
     public sealed class NotebookGameComponent : GameComponent
@@ -24,7 +24,7 @@ namespace RimChronicle
 
         public override void ExposeData()
         {
-            Scribe_References.Look(ref notebook, "rimChronicleNotebook");
+            Scribe_References.Look(ref notebook, "RimLLMNotebook");
         }
 
         public override void GameComponentTick()
@@ -48,7 +48,7 @@ namespace RimChronicle
                     continue;
 
                 Pawn colonist = map.mapPawns.FreeColonistsSpawned[0];
-                Thing created = ThingMaker.MakeThing(NotebookDefOf.RimChronicle_Notebook);
+                Thing created = ThingMaker.MakeThing(NotebookDefOf.RimLLM_Notebook);
                 if (GenPlace.TryPlaceThing(created, colonist.Position, map, ThingPlaceMode.Near))
                 {
                     notebook = created;
@@ -64,7 +64,7 @@ namespace RimChronicle
             {
                 // Includes inventory, corpses, shelves and containers, not just loose items.
                 ThingOwnerUtility.GetAllThingsRecursively(map,
-                    ThingRequest.ForDef(NotebookDefOf.RimChronicle_Notebook), searchResults);
+                    ThingRequest.ForDef(NotebookDefOf.RimLLM_Notebook), searchResults);
                 if (searchResults.Count > 0)
                     return searchResults[0];
             }

@@ -3,12 +3,12 @@ using RimWorld;
 using Verse;
 using Verse.AI;
 
-namespace RimChronicle
+namespace RimLLM
 {
     [DefOf]
     public static class NotebookDefOf
     {
-        public static ThingDef RimChronicle_Notebook;
+        public static ThingDef RimLLM_Notebook;
 
         static NotebookDefOf()
         {

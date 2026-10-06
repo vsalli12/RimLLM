@@ -1,4 +1,4 @@
-"""RimChronicle development receiver. Python 3.10+, standard library only.
+"""RimLLM development receiver. Python 3.10+, standard library only.
 
 Run: python dev/receiver.py
 Events are printed and durably stored in SQLite before acknowledging the sender.
@@ -94,7 +94,7 @@ def make_handler(db):
 
         def do_GET(self):
             self.reply(200 if self.path == "/health" else 404,
-                       "RimChronicle receiver ready" if self.path == "/health" else "Not found")
+                       "RimLLM receiver ready" if self.path == "/health" else "Not found")
 
         def do_POST(self):
             if self.path != "/events":

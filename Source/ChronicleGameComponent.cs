@@ -4,9 +4,9 @@ using System.IO;
 using System.Linq;
 using RimWorld;
 using Verse;
-using static RimChronicle.ChronicleData;
+using static RimLLM.ChronicleData;
 
-namespace RimChronicle
+namespace RimLLM
 {
     public sealed class ChronicleGameComponent : GameComponent
     {
@@ -47,7 +47,7 @@ namespace RimChronicle
                 if (tick < lastErrorTick || tick - lastErrorTick >= 60000)
                 {
                     lastErrorTick = tick;
-                    Log.Warning("[RimChronicle] Could not capture an event: " + ex);
+                    Log.Warning("[RimLLM] Could not capture an event: " + ex);
                 }
             }
         }
@@ -56,7 +56,7 @@ namespace RimChronicle
         {
             if (!started)
             {
-                EventDelivery.Start(Path.Combine(GenFilePaths.SaveDataFolderPath, "RimChronicle", "outbox"));
+                EventDelivery.Start(Path.Combine(GenFilePaths.SaveDataFolderPath, "RimLLM", "outbox"));
                 string parentSession = sessionId;
                 string checkpoint = lastEventId;
                 playthroughId = playthroughId ?? Guid.NewGuid().ToString("N");
@@ -98,7 +98,7 @@ namespace RimChronicle
 
         public override void GameComponentUpdate()
         {
-            while (EventDelivery.Notices.TryDequeue(out string notice)) Log.Warning("[RimChronicle] " + notice);
+            while (EventDelivery.Notices.TryDequeue(out string notice)) Log.Warning("[RimLLM] " + notice);
         }
 
         public void Emit(string type, object data, Map map = null, object participants = null)

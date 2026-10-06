@@ -90,11 +90,12 @@ def load_diaries():
 
 class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
-        if self.path in ("/theme.css", "/theme.js"):
-            body = (DIRECTORY / self.path[1:]).read_bytes()
+        if self.path in ("/theme.css", "/theme.js", "/web/theme.css", "/web/theme.js"):
+            asset = self.path.rsplit("/", 1)[-1]
+            body = (DIRECTORY / "web" / asset).read_bytes()
             content_type = "text/css; charset=utf-8" if self.path.endswith('.css') else "text/javascript; charset=utf-8"
         elif self.path == "/":
-            body = (DIRECTORY / "diary.html").read_bytes()
+            body = (DIRECTORY / "web/diary.html").read_bytes()
             content_type = "text/html; charset=utf-8"
         elif self.path == "/diaries":
             body = json.dumps(load_diaries(), ensure_ascii=False).encode("utf-8")

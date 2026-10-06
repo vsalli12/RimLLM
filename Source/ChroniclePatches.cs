@@ -2,9 +2,9 @@ using HarmonyLib;
 using RimWorld;
 using Verse;
 using Verse.AI;
-using static RimChronicle.ChronicleData;
+using static RimLLM.ChronicleData;
 
-namespace RimChronicle
+namespace RimLLM
 {
     [HarmonyPatch(typeof(PlayLog), nameof(PlayLog.Add))]
     internal static class RecordInteraction

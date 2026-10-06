@@ -1,15 +1,15 @@
 using HarmonyLib;
 using Verse;
 
-namespace RimChronicle
+namespace RimLLM
 {
-    public sealed class RimChronicleMod : Mod
+    public sealed class RimLLMMod : Mod
     {
-        public RimChronicleMod(ModContentPack content) : base(content)
+        public RimLLMMod(ModContentPack content) : base(content)
         {
-            new Harmony("RimChronicle.RimChronicle").PatchAll();
+            new Harmony("RimLLM.RimLLM").PatchAll();
             UnityEngine.Application.quitting += EventDelivery.FlushOnExit;
-            Log.Message("[RimChronicle] Mod loaded successfully.");
+            Log.Message("[RimLLM] Mod loaded successfully.");
         }
     }
 }

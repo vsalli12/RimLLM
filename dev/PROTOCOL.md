@@ -132,7 +132,7 @@ when generating stories, excluding abandoned futures after a reload. Files copie
 from the same save share a playthrough ID and form separate sessions.
 
 Batches of up to 100 records are written in the background to
-`<RimWorld save-data folder>/RimChronicle/outbox`, then sent over loopback. Failed
+`<RimWorld save-data folder>/RimLLM/outbox`, then sent over loopback. Failed
 deliveries retry, including after restarting the game. No game objects are accessed
 by the worker. Normal exit attempts a bounded flush; crashes can lose the in-memory
 tail before it reaches disk. Disk failure can fill the 20,000-event memory limit,

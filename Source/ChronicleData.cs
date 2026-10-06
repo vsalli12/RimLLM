@@ -4,7 +4,7 @@ using RimWorld;
 using RimWorld.Planet;
 using Verse;
 
-namespace RimChronicle
+namespace RimLLM
 {
     internal static class ChronicleData
     {
