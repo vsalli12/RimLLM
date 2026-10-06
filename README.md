@@ -27,6 +27,4 @@ The LLM and the optional image generation runs locally. A GPU is needed with opt
 3. Ensure that the diary is picked up by someone.
 4. Generate the diary manually at any point in dashboard. 
 
-The event receiver and dashboard use only the local machine. Diary data, settings, and generated files are stored under `dev/` and are excluded from Git.
-
 To rebuild after changing the C# source, install the .NET 10 SDK and run `dotnet build --configuration Release`. Set `RimWorldDir` or `HarmonyDll` if those installations are outside their default Steam locations.
